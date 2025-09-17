@@ -1,209 +1,113 @@
-# API对接文档
+# API 对接开发指南 (开发者版)
 
-## 基本信息
-- **API 基础地址**: `http://localhost:1337/api` (开发环境)
-- **Content-Type**: `application/json`
-- **Strapi 版本**: 5.23.1
-- **数据库**: PostgreSQL
+本文档将指导您如何从 Strapi CMS 中获取文章数据，并将其集成到您的网站中。
 
-## 核心API接口
+## 1. 快速上手
 
-### 1. 获取文章列表
-```http
-GET /api/articles
-```
+*   **API 基础地址**: `https://blogger.vertu.com/api`
+*   **请求方法**: `GET`
+*   **返回格式**: `JSON`
 
-**查询参数:**
-- `pagination[page]`: 页码（默认: 1）
-- `pagination[pageSize]`: 每页数量（默认: 25，最大: 100）
-- `sort`: 排序字段（例如: `createdAt:desc`）
-- `populate`: 关联数据（例如: `cover_image,website`）
-- `publicationState`: 发布状态（`live`只显示已发布）
+> **重要**: 在开始编码前，请向运营人员获取您所负责网站的 **`identifier` (网站唯一标识)**，例如 `vertu-tech-blog`。这是精确筛选内容的关键。
 
-**请求示例:**
-```http
-GET /api/articles?pagination[page]=1&pagination[pageSize]=10&sort=createdAt:desc&populate=cover_image,website&publicationState=live
-```
+## 2. 核心 API 接口
 
-**响应示例:**
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "attributes": {
-        "title": "文章标题",
-        "content": [
-          {
-            "type": "paragraph",
-            "children": [
-              {
-                "text": "文章内容..."
-              }
-            ]
-          }
-        ],
-        "slug": "wen-zhang-biao-ti",
-        "view_count": 123,
-        "createdAt": "2024-01-01T00:00:00.000Z",
-        "updatedAt": "2024-01-01T00:00:00.000Z",
-        "publishedAt": "2024-01-01T00:00:00.000Z",
-        "cover_image": {
-          "data": [
-            {
-              "id": 1,
-              "attributes": {
-                "name": "image.jpg",
-                "url": "/uploads/image.jpg",
-                "mime": "image/jpeg",
-                "size": 123456
-              }
-            }
-          ]
-        },
-        "website": {
-          "data": {
-            "id": 1,
-            "attributes": {
-              "name": "网站名称",
-              "url": "https://example.com",
-              "identifier": "example"
-            }
-          }
-        }
-      }
-    }
-  ],
-  "meta": {
-    "pagination": {
-      "page": 1,
-      "pageSize": 10,
-      "pageCount": 5,
-      "total": 50
-    }
-  }
-}
-```
+您只需要关注以下两个核心接口。
 
-### 2. 根据slug获取文章详情
-```http
-GET /api/articles?filters[slug][$eq]={slug}&populate=cover_image,website
-```
+---
 
-**请求示例:**
-```http
-GET /api/articles?filters[slug][$eq]=wen-zhang-biao-ti&populate=cover_image,website
-```
+### 接口一：获取网站的文章列表
 
-**响应示例:**
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "attributes": {
-        "title": "文章标题",
-        "content": [
-          {
-            "type": "paragraph",
-            "children": [
-              {
-                "text": "完整的文章内容..."
-              }
-            ]
-          }
-        ],
-        "slug": "wen-zhang-biao-ti",
-        "view_count": 123,
-        "createdAt": "2024-01-01T00:00:00.000Z",
-        "updatedAt": "2024-01-01T00:00:00.000Z",
-        "publishedAt": "2024-01-01T00:00:00.000Z",
-        "cover_image": {
-          "data": [
-            {
-              "id": 1,
-              "attributes": {
-                "name": "image.jpg",
-                "url": "/uploads/image.jpg",
-                "mime": "image/jpeg",
-                "size": 123456
-              }
-            }
-          ]
-        },
-        "website": {
-          "data": {
-            "id": 1,
-            "attributes": {
-              "name": "网站名称",
-              "url": "https://example.com",
-              "identifier": "example"
-            }
-          }
-        }
-      }
-    }
-  ]
-}
-```
+用于在您网站的首页或博客列表页展示所有文章。
 
-## JavaScript SDK 示例
+*   **端点**: `GET /api/articles`
 
-### 获取文章列表
+*   **核心参数**:
+    | 参数 | 示例 | **说明** |
+    | :--- | :--- | :--- |
+    | `filters[website][identifier][$eq]` | `vertu-tech-blog` | **[必需]** 用于筛选出属于您网站的文章。 |
+    | `populate` | `*` | **[推荐]** 用于加载所有关联数据（如封面图）。 |
+    | `sort` | `createdAt:desc` | **[推荐]** 按创建时间倒序，确保最新文章在前。 |
+    | `pagination[pageSize]` | `10` | **[可选]** 控制每页返回的文章数量。 |
+
+*   **请求示例**:
+    ```http
+    GET https://blogger.vertu.com/api/articles?filters[website][identifier][$eq]=vertu-tech-blog&populate=*&sort=createdAt:desc&pagination[pageSize]=10
+    ```
+
+---
+
+### 接口二：根据 Slug 获取单篇文章详情
+
+用于在文章详情页，通过对人类友好的 URL (`slug`) 来获取特定文章的完整内容。
+
+*   **端点**: `GET /api/articles`
+
+*   **核心参数**:
+    | 参数 | 示例 | **说明** |
+    | :--- | :--- | :--- |
+    | `filters[slug][$eq]` | `my-first-post` | **[必需]** 使用文章的 `slug` 字段进行精确查找。 |
+    | `populate` | `*` | **[推荐]** 加载文章所有关联数据。 |
+
+*   **请求示例**:
+    ```http
+    GET https://blogger.vertu.com/api/articles?filters[slug][$eq]=my-first-post&populate=*
+    ```
+
+---
+
+## 3. JavaScript 代码示例 (`fetch`)
+
+您可以将以下函数直接用于您的项目中。
+
 ```javascript
-async function getArticles(page = 1, pageSize = 10) {
-  try {
-    const response = await fetch(`http://localhost:1337/api/articles?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=createdAt:desc&populate=cover_image,website&publicationState=live`);
-    
-    if (!response.ok) {
-      throw new Error('获取文章列表失败');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
-}
-```
+const STRAPI_BASE_URL = 'https://blogger.vertu.com/api';
 
-### 根据slug获取文章详情
-```javascript
+/**
+ * 根据网站标识符获取文章列表。
+ * @param {string} websiteIdentifier - 您网站的唯一标识 (e.g., 'vertu-tech-blog')。
+ * @returns {Promise<Array>} 文章对象数组。
+ */
+async function getArticlesByWebsite(websiteIdentifier) {
+  const params = new URLSearchParams({
+    'filters[website][identifier][$eq]': websiteIdentifier,
+    'populate': '*',
+    'sort': 'createdAt:desc',
+  });
+
+  const response = await fetch(`${STRAPI_BASE_URL}/articles?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const { data } = await response.json();
+  return data;
+}
+
+/**
+ * 根据 slug 获取单篇文章详情。
+ * @param {string} slug - 文章的 slug (e.g., 'my-first-post')。
+ * @returns {Promise<Object|null>} 单个文章对象，或在未找到时返回 null。
+ */
 async function getArticleBySlug(slug) {
-  try {
-    const response = await fetch(`http://localhost:1337/api/articles?filters[slug][$eq]=${slug}&populate=cover_image,website`);
-    
-    if (!response.ok) {
-      throw new Error('获取文章详情失败');
-    }
-    
-    const data = await response.json();
-    return data.data[0]; // 返回第一个匹配的文章
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
+  const params = new URLSearchParams({
+    'filters[slug][$eq]': slug,
+    'populate': '*',
+  });
+
+  const response = await fetch(`${STRAPI_BASE_URL}/articles?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+  const { data } = await response.json();
+  
+  // Strapi 的筛选结果总是一个数组，我们只需要第一项。
+  return data.length > 0 ? data : null;
 }
+
+// --- 使用示例 ---
+// getArticlesByWebsite('vertu-tech-blog')
+//   .then(articles => console.log('文章列表:', articles));
+
+// getArticleBySlug('my-first-post')
+//   .then(article => console.log('文章详情:', article));
 ```
-
-## 数据模型说明
-
-### Article (文章)
-- `title`: 文章标题
-- `content`: 文章内容（富文本块）
-- `slug`: URL友好的标识符（自动从标题生成）
-- `view_count`: 浏览次数
-- `cover_image`: 封面图片（关联媒体文件）
-- `website`: 关联的网站信息
-- `publishedAt`: 发布时间
-
-### Website (网站)
-- `name`: 网站名称
-- `url`: 网站地址
-- `identifier`: 网站标识符
-
-### Media (媒体文件)
-- `name`: 文件名
-- `url`: 访问地址
-- `mime`: 文件类型
-- `size`: 文件大小
