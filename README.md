@@ -1,4 +1,60 @@
-# 🚀 Getting started with Strapi
+# Vertu VPS Blogger CMS
+
+基于 Strapi 构建的现代化博客内容管理系统，为 Vertu VPS 旗下网站提供统一的内容管理解决方案。
+
+## 📚 项目文档
+
+欢迎来到项目文档中心。
+
+- [**运营人员后台操作手册**](./operations-manual.md)
+- [**开发人员 API 对接指南**](./developer-guide.md)
+
+---
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Node.js 18+ 
+- PostgreSQL 数据库
+- npm 或 yarn
+
+### 安装依赖
+
+```bash
+npm install
+# 或
+yarn install
+```
+
+### 启动开发服务器
+
+```bash
+npm run develop
+# 或
+yarn develop
+```
+
+开发服务器将在 `http://localhost:1337` 启动，管理面板地址为 `http://localhost:1337/admin`。
+
+### 生产环境部署
+
+```bash
+# 构建项目
+npm run build
+
+# 启动生产服务器
+npm run start
+```
+
+## 🔧 系统配置
+
+- **数据库**: PostgreSQL
+- **认证**: JWT + 用户权限系统
+- **API**: RESTful API + GraphQL
+- **管理面板**: Strapi Admin Panel
+
+## 📖 Strapi 官方文档
 
 Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
 
