@@ -25,14 +25,14 @@
 *   **核心参数**:
     | 参数 | 示例 | **说明** |
     | :--- | :--- | :--- |
-    | `filters[website][identifier][$eq]` | `vertu-tech-blog` | **[必需]** 用于筛选出属于您网站的文章。 |
-    | `populate` | `*` | **[推荐]** 用于加载所有关联数据（如封面图）。 |
+    | `filters[website][identifier][$eq]` | `openseo` | **[必需]** 用于筛选出属于您网站的文章。这里的值是网站的identifier字段。 |
+    | `populate` | `*` | **[推荐]** 用于加载所有关联数据（如封面图、网站信息）。 |
     | `sort` | `createdAt:desc` | **[推荐]** 按创建时间倒序，确保最新文章在前。 |
     | `pagination[pageSize]` | `10` | **[可选]** 控制每页返回的文章数量。 |
 
 *   **请求示例**:
     ```http
-    GET https://blogger.vertu.com/api/articles?filters[website][identifier][$eq]=vertu-tech-blog&populate=*&sort=createdAt:desc&pagination[pageSize]=10
+    GET https://blogger.vertu.com/api/articles?filters[website][identifier][$eq]=openseo&populate=*&sort=createdAt:desc&pagination[pageSize]=10
     ```
 
 ---
@@ -65,7 +65,7 @@ const STRAPI_BASE_URL = 'https://blogger.vertu.com/api';
 
 /**
  * 根据网站标识符获取文章列表。
- * @param {string} websiteIdentifier - 您网站的唯一标识 (e.g., 'vertu-tech-blog')。
+ * @param {string} websiteIdentifier - 您网站的唯一标识 (e.g., 'openseo')。
  * @returns {Promise<Array>} 文章对象数组。
  */
 async function getArticlesByWebsite(websiteIdentifier) {
@@ -105,9 +105,11 @@ async function getArticleBySlug(slug) {
 }
 
 // --- 使用示例 ---
-// getArticlesByWebsite('vertu-tech-blog')
+// 获取openseo网站的所有文章
+// getArticlesByWebsite('openseo')
 //   .then(articles => console.log('文章列表:', articles));
 
+// 根据slug获取特定文章详情
 // getArticleBySlug('my-first-post')
 //   .then(article => console.log('文章详情:', article));
 ```
