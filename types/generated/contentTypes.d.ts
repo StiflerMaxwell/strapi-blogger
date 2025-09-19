@@ -405,6 +405,7 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     view_count: Schema.Attribute.Integer;
+    website: Schema.Attribute.Relation<'oneToOne', 'api::website.website'>;
   };
 }
 

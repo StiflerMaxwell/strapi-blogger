@@ -33,6 +33,11 @@
     "slug": {
       "type": "uid",
       "targetField": "title"
+    },
+    "website": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::website.website"
     }
   }
 }
