@@ -20,11 +20,10 @@
     "url": {
       "type": "string"
     },
-    "article": {
+    "articles": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::article.article",
-      "mappedBy": "website"
+      "relation": "oneToMany",
+      "target": "api::article.article"
     }
   }
 }

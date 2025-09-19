@@ -30,12 +30,6 @@
     "view_count": {
       "type": "integer"
     },
-    "website": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::website.website",
-      "inversedBy": "article"
-    },
     "slug": {
       "type": "uid",
       "targetField": "title"
