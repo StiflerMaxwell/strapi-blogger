@@ -399,6 +399,10 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    reading_records: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reading-record.reading-record'
+    >;
     slug: Schema.Attribute.UID<'title'>;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -406,6 +410,37 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     view_count: Schema.Attribute.Integer;
     website: Schema.Attribute.Relation<'oneToOne', 'api::website.website'>;
+  };
+}
+
+export interface ApiReadingRecordReadingRecord
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'reading_records';
+  info: {
+    displayName: 'Reading Record';
+    pluralName: 'reading-records';
+    singularName: 'reading-record';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    article: Schema.Attribute.Relation<'manyToOne', 'api::article.article'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ip_address: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reading-record.reading-record'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    read_date: Schema.Attribute.Date & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -949,6 +984,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
+      'api::reading-record.reading-record': ApiReadingRecordReadingRecord;
       'api::website.website': ApiWebsiteWebsite;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
