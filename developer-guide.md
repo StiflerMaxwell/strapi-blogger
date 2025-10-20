@@ -56,6 +56,39 @@
 
 ---
 
+### 接口三：增加文章浏览量
+
+用于在用户访问文章详情页时记录浏览次数。
+
+*   **端点**: `POST /api/articles/:id/increment-view`
+
+*   **核心参数**:
+    | 参数 | 示例 | **说明** |
+    | :--- | :--- | :--- |
+    | `id` | `1` | **[必需]** 文章的ID（在URL路径中）。 |
+
+*   **特性**:
+    - 自动记录客户端IP地址，防止5分钟内重复计数
+    - 不需要身份认证，可公开访问
+    - 返回更新后的浏览量
+
+*   **请求示例**:
+    ```http
+    POST https://blogger.vertu.com/api/articles/1/increment-view
+    ```
+
+*   **响应示例**:
+    ```json
+    {
+      "data": {
+        "id": 1,
+        "view_count": 42
+      }
+    }
+    ```
+
+---
+
 ## 3. JavaScript 代码示例 (`fetch`)
 
 您可以将以下函数直接用于您的项目中。
@@ -104,6 +137,24 @@ async function getArticleBySlug(slug) {
   return data.length > 0 ? data : null;
 }
 
+/**
+ * 增加文章浏览量。
+ * @param {number} articleId - 文章的ID。
+ * @returns {Promise<Object>} 包含更新后浏览量的对象。
+ */
+async function incrementArticleView(articleId) {
+  const response = await fetch(`${STRAPI_BASE_URL}/articles/${articleId}/increment-view`, {
+    method: 'POST',
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  const { data } = await response.json();
+  return data;
+}
+
 // --- 使用示例 ---
 // 获取openseo网站的所有文章
 // getArticlesByWebsite('openseo')
@@ -112,4 +163,8 @@ async function getArticleBySlug(slug) {
 // 根据slug获取特定文章详情
 // getArticleBySlug('my-first-post')
 //   .then(article => console.log('文章详情:', article));
+
+// 增加文章浏览量（在文章详情页加载时调用）
+// incrementArticleView(1)
+//   .then(result => console.log('更新后的浏览量:', result.view_count));
 ```

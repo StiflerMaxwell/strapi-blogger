@@ -4,8 +4,6 @@
 
 ## 📚 项目文档
 
-欢迎来到项目文档中心。
-
 - [**运营人员后台操作手册**](./operations-manual.md)
 - [**开发人员 API 对接指南**](./developer-guide.md)
 
@@ -53,6 +51,29 @@ npm run start
 - **认证**: JWT + 用户权限系统
 - **API**: RESTful API + GraphQL
 - **管理面板**: Strapi Admin Panel
+
+## ✨ 核心功能
+
+### 1. 多网站内容管理
+- 统一管理多个网站的文章内容
+- 通过 `identifier` 字段精确区分不同网站
+- 支持按网站筛选和查询文章
+
+### 2. 文章浏览量统计
+- 自动记录文章浏览次数
+- 基于IP地址的防重复计数（5分钟缓存）
+- 公开API接口，无需认证
+- API端点: `POST /api/articles/:id/increment-view`
+
+### 3. 富文本编辑
+- Markdown 支持
+- 图片上传和管理
+- 封面图片设置
+
+### 4. SEO优化
+- 友好的URL Slug
+- Meta标签管理
+- 自动生成文章摘要
 
 ## 📖 Strapi 官方文档
 
