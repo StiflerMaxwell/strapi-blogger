@@ -5,6 +5,57 @@
 import { factories } from '@strapi/strapi'
 
 export default factories.createCoreController('api::article.article', ({ strapi }) => ({
+  // 自定义find方法，支持website过滤
+  async find(ctx) {
+    try {
+      const { query } = ctx;
+      
+      // 检查是否有website过滤条件
+      if (query.filters && (query.filters as any).website) {
+        const websiteFilter = (query.filters as any).website;
+        
+        // 如果过滤条件是identifier
+        if (websiteFilter.identifier && websiteFilter.identifier.$eq) {
+          // 先查找匹配的website
+          const websites = await strapi.entityService.findMany('api::website.website', {
+            filters: { identifier: websiteFilter.identifier.$eq },
+            fields: ['id']
+          });
+          
+          if (websites.length === 0) {
+            return { data: [], meta: { pagination: { page: 1, pageSize: 25, pageCount: 0, total: 0 } } };
+          }
+          
+          // 使用website的id进行过滤
+          const websiteIds = websites.map(w => w.id);
+          (query.filters as any).website = { id: { $in: websiteIds } };
+        }
+      }
+      
+      // 直接使用entityService查询，避免递归调用
+      const data = await strapi.entityService.findMany('api::article.article', {
+        ...query,
+        populate: query.populate || '*'
+      });
+      
+      // 构造返回格式
+      const pagination = query.pagination as any || {};
+      const meta = {
+        pagination: {
+          page: pagination.page || 1,
+          pageSize: pagination.pageSize || 25,
+          pageCount: Math.ceil((data.length || 0) / (pagination.pageSize || 25)),
+          total: data.length || 0
+        }
+      };
+      
+      return { data, meta };
+    } catch (error) {
+      console.error('Article find error:', error);
+      return ctx.badRequest('查询文章失败', { error: error.message });
+    }
+  },
+
   // 增加阅读量接口
   async incrementViewCount(ctx) {
     try {
