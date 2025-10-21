@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reading_records",
+  "info": {
+    "singularName": "reading-record",
+    "pluralName": "reading-records",
+    "displayName": "Reading Record"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ip_address": {
+      "type": "string",
+      "required": true
+    },
+    "article": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::article.article",
+      "inversedBy": "reading_records"
+    },
+    "read_date": {
+      "type": "date",
+      "required": true
+    },
+    "createdAt": {
+      "type": "datetime"
+    },
+    "updatedAt": {
+      "type": "datetime"
+    }
+  }
+}
