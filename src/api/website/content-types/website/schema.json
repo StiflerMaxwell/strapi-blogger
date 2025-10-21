@@ -19,6 +19,9 @@
     },
     "url": {
       "type": "string"
+    },
+    "cnName": {
+      "type": "string"
     }
   }
 }
