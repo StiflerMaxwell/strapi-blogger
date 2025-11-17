@@ -14,8 +14,18 @@
     "title": {
       "type": "string"
     },
+    "author": {
+      "type": "string"
+    },
     "content": {
       "type": "blocks"
+    },
+    "custorm_content": {
+      "type": "customField",
+      "customField": "plugin::ckeditor5.CKEditor",
+      "options": {
+        "preset": "defaultHtml"
+      }
     },
     "cover_image": {
       "type": "media",
