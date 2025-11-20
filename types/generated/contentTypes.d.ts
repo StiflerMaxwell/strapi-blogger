@@ -406,11 +406,13 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
       'api::article.article'
     > &
       Schema.Attribute.Private;
+    pin_order: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     reading_records: Schema.Attribute.Relation<
       'oneToMany',
       'api::reading-record.reading-record'
     >;
+    seo: Schema.Attribute.JSON;
     slug: Schema.Attribute.UID<'title'>;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
