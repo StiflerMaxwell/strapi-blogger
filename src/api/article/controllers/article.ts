@@ -5,7 +5,7 @@
 import { factories } from '@strapi/strapi'
 
 export default factories.createCoreController('api::article.article', ({ strapi }) => ({
-  // 自定义find方法，支持website过滤
+  // 自定义find方法，支持website过滤和分页
   async find(ctx) {
     try {
       const { query } = ctx;
@@ -32,20 +32,55 @@ export default factories.createCoreController('api::article.article', ({ strapi 
         }
       }
       
-      // 直接使用entityService查询，避免递归调用
+      // 解析分页参数
+      const pagination = query.pagination as any || {};
+      const page = pagination.page || 1;
+      const pageSize = pagination.pageSize || 25;
+      
+      // 先查询总数（用于计算总页数）
+      const total = await strapi.entityService.count('api::article.article', {
+        filters: query.filters || {},
+      });
+      
+      // 计算分页数据
+      const pageCount = Math.ceil(total / pageSize);
+      
+      // 计算 start 和 limit（Strapi 使用 start 和 limit 进行分页）
+      const start = (page - 1) * pageSize;
+      const limit = pageSize;
+      
+      // 优化 populate：排除 reading_records（oneToMany关系，数据量大且列表查询不需要）
+      // 如果用户传入 populate=*，使用优化的 populate 对象而不是加载所有数据
+      let populate = query.populate;
+      if (!populate || populate === '*') {
+        // 使用优化的默认 populate，排除 reading_records
+        populate = {
+          website: {
+            fields: ['id', 'identifier', 'name', 'url', 'cnName'], // 只加载必要字段
+          },
+          cover_image: {
+            // 不限制 fields，加载完整的 media 对象（包括 formats），前端需要访问 formats.large 等
+          },
+          // 不加载 reading_records，减少数据量和查询时间
+        };
+      }
+      
+      // 查询分页数据
       const data = await strapi.entityService.findMany('api::article.article', {
-        ...query,
-        populate: query.populate || '*'
+        filters: query.filters || {},
+        populate,
+        sort: query.sort || ['createdAt:desc'],
+        start,
+        limit,
       });
       
       // 构造返回格式
-      const pagination = query.pagination as any || {};
       const meta = {
         pagination: {
-          page: pagination.page || 1,
-          pageSize: pagination.pageSize || 25,
-          pageCount: Math.ceil((data.length || 0) / (pagination.pageSize || 25)),
-          total: data.length || 0
+          page,
+          pageSize,
+          pageCount,
+          total,
         }
       };
       
