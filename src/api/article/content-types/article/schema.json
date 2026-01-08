@@ -55,11 +55,12 @@
       "target": "api::reading-record.reading-record",
       "mappedBy": "article"
     },
-    "pin_order": {
-      "type": "integer"
-    },
     "seo": {
       "type": "json"
+    },
+    "priority": {
+      "type": "integer",
+      "default": 0
     }
   }
 }

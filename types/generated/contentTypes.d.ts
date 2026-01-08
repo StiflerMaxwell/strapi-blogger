@@ -406,7 +406,7 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
       'api::article.article'
     > &
       Schema.Attribute.Private;
-    pin_order: Schema.Attribute.Integer;
+    priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
     reading_records: Schema.Attribute.Relation<
       'oneToMany',
