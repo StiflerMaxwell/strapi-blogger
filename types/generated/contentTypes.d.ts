@@ -400,6 +400,13 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
           preset: 'defaultHtml';
         }
       >;
+    lang: Schema.Attribute.Enumeration<['en', 'zh', 'ru']> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'en'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

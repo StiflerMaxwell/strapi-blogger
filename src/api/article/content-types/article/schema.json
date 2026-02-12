@@ -61,6 +61,16 @@
     "priority": {
       "type": "integer",
       "default": 0
+    },
+    "lang": {
+      "type": "enumeration",
+      "enum": ["en", "zh", "ru"],
+      "default": "en",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
     }
   }
 }

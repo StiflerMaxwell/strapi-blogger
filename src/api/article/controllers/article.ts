@@ -10,6 +10,15 @@ export default factories.createCoreController('api::article.article', ({ strapi 
     try {
       const { query } = ctx;
       
+      // 支持 lang 参数过滤
+      if (query.lang) {
+        if (!query.filters) {
+          query.filters = {};
+        }
+        (query.filters as any).lang = query.lang;
+        delete query.lang;
+      }
+      
       // 检查是否有website过滤条件
       if (query.filters && (query.filters as any).website) {
         const websiteFilter = (query.filters as any).website;
